@@ -1,9 +1,13 @@
 {
   "name": "line-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "author": "andoshin11 <shinglish11@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist/ && `yarn bin`/babel index.js --out-dir ./dist",
+    "deploy": "yarn build && gcloud beta functions deploy sharela-bot --entry-point handler --trigger-http --stage-bucket sharela-bot-functions --memory=256MB"
+  },
   "dependencies": {
     "babel-runtime": "^6.26.0"
   },
