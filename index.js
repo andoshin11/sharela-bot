@@ -1,1 +1,2 @@
-export const handler = (req, res) => res.send('Hello World ES6!')
+require('dotenv').config()
+export const handler = (req, res) => res.send(process.env.SECRET_MSG)
