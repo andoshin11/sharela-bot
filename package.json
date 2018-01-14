@@ -9,7 +9,8 @@
     "deploy": "yarn build && gcloud beta functions deploy sharela-bot --entry-point handler --trigger-http --stage-bucket sharela-bot-functions --memory=256MB"
   },
   "dependencies": {
-    "babel-runtime": "^6.26.0"
+    "babel-runtime": "^6.26.0",
+    "dotenv": "^4.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
