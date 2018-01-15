@@ -54,6 +54,7 @@ const handleText = (message, replyToken, source) => {
             replyToken,
             [
               `Display name: ${profile.displayName}`,
+              `User ID: ${source.userId}`,
               `Status message: ${profile.statusMessage}`
             ]
           ))
