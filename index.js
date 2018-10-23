@@ -1,4 +1,6 @@
 import * as line from '@line/bot-sdk'
+const admin = require('firebase-admin')
+import serviceAccount from '../firebase-secret-key.json'
 
 // load environmental variables
 import { config as dotenvConfig } from 'dotenv'
@@ -8,6 +10,15 @@ const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.CHANNEL_SECRET
 }
+
+// setup Firestore
+console.log('getting config.json')
+//console.log(functions.config())
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+})
+
+const db = admin.fireStore()
 
 // create LINE client
 const client = new line.Client(config)
@@ -39,7 +50,15 @@ const handleEvent = event => {
       if (data === 'DATE' || data === 'TIME' || data == 'DATETIME') {
         data += `(${JSON.stringify(event.postback.params)})`
       }
-      return replyText(event.replyToken, `Got postback: ${data}`)
+
+      // handle postback
+      return replyText(event.replyToken, `Why no match? ${data.match(/^action=([a-z]+)/)}`)
+      if (data.match(/^action=([a-z]+)/)) {
+        const action = data.match(/^action=([a-z]+)/)[1]
+        return handleAction(action, event.replyToken, event.source)
+      } else {
+        return replyText(event.replyToken, `Got postback: ${data}`)
+      }
     default:
       throw new Error(`Unknown event: ${JSON.stringify(event)}`)
   }
@@ -63,6 +82,27 @@ const handleText = (message, replyToken, source) => {
       }
     default:
       return replyText(replyToken, message.text)
+  }
+}
+
+// handle actions
+const handleAction = (action, replyToken, source) => {
+  switch (action) {
+    case 'show':
+      if (!source.userId) return replyText(replyToken, `ユーザーIDが取得できませんでした。友達登録をしてください。`)
+
+      let users = []
+      db.collection('users').get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            users.push(doc.id)
+          })
+        })
+        .then(
+          replyText(replyToken, `ユーザーを取得しました: ${users}`)
+        )
+    default:
+        return replyText(replyToken, '登録されていないアクションです')
   }
 }
 

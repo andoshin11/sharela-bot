@@ -3,3 +3,4 @@ node_modules
 dist
 static
 .DS_Store
+firebase-secret-key.json
